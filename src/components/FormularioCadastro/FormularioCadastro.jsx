@@ -1,95 +1,83 @@
 import React from "react";
-import { Component } from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 import './estilo.css';
 
-class FormularioCadastro extends Component {
+function FormularioCadastro({ categorias, criarNota }) {
 
-    constructor(props) {
-        super(props);
-        // this.titulo = '';
-        // this.texto = '';
-        // this.categoria = 'Sem categoria';
-        this.state = { categorias: [], titulo: '', texto: '', categoria: 'Sem categoria' };
+    //Estado interno do componente
+    const [cadastro, //recebe os dados 
+        setCadastro] = useState({ categorias: [], titulo: '', texto: '', categoria: 'Sem categoria' }); //seta os dados
 
-        this._novasCategorias = this._novasCategorias.bind(this);
+    // useEffect -> roda após o componente ser montado
+    useEffect( () => {
+        categorias.inscrever(novasCategorias) //roda após o componente ser montado
+        return () => { categorias.desinscrever() } //roda quando o componente é desmontado da tela
+    }, [] //array de dependencia
+    );
+
+    function novasCategorias(categorias) {
+        setCadastro({ ...cadastro, categorias });
     }
 
-    componentDidMount() {
-        this.props.categorias.inscrever(this._novasCategorias);
-    }
-
-    componentWillUnmount() {
-        this.props.categorias.desinscrever(this._novasCategorias);
-    }
-
-    _novasCategorias(categorias) {
-        this.setState( {...this.state, categorias} );
-    }
-
-    _handleMudancaCategoria(evento) {
+    function handleMudancaCategoria(evento) {
         evento.stopPropagation();
-        // this.categoria = evento.target.value;
-        this.setState( { ...this.state, categoria: evento.target.value} );
+        setCadastro({ ...cadastro, categoria: evento.target.value });
     }
 
-    _handleMudancaTitulo(evento) {
+    function handleMudancaTitulo(evento) {
         evento.stopPropagation();
-        // this.titulo = evento.target.value;
-        this.setState( { ...this.state, titulo: evento.target.value} );
+        setCadastro({ ...cadastro, titulo: evento.target.value });
     }
 
-    _handleMudancaTexto(evento) {
+    function handleMudancaTexto(evento) {
         evento.stopPropagation();
-        // this.texto  = evento.target.value;
-        this.setState( { ...this.state, texto: evento.target.value} );
+        setCadastro({ ...cadastro, texto: evento.target.value });
     }
 
-    _criarNota(evento) {
+    function handleSubmit (evento) {
         evento.preventDefault(); //para não executar o comportamento padrão (tentar enviar o form)
         evento.stopPropagation(); //evita a propagação do evento no DOM
-        this.props.criarNota(this.state.titulo, this.state.texto, this.state.categoria); //chamando a propriedade "criarNota" da instância "FormularioCadastro"
+        criarNota(cadastro.titulo, cadastro.texto, cadastro.categoria); //chamando a propriedade "criarNota" da instância "FormularioCadastro"
 
-        this.setState( {...this.state, titulo: '', texto: '', categoria: 'Sem Categoria'} );
+        setCadastro({ ...cadastro, titulo: '', texto: '', categoria: 'Sem Categoria' });
     }
 
-    render() {
-        const {categorias} = this.props; 
-        console.log(categorias);
 
-        return (
-            <form className="form-cadastro" onSubmit={this._criarNota.bind(this)}>
+    return (
+        <form className="form-cadastro" onSubmit={handleSubmit}>
 
-                <select className="form-cadastro_input" onChange={this._handleMudancaCategoria.bind(this)} >
-                    <option>Sem categoria</option>
+            <select className="form-cadastro_input" onChange={handleMudancaCategoria} >
+                <option>Sem categoria</option>
 
-                    {categorias.categorias.map((categoria, index) => {
-                        return <option key={index}>{categoria}</option>
-                    })}
-                </select>
+                {categorias.categorias.map((categoria, index) => {
+                    return <option key={index}>{categoria}</option>
+                })}
+            </select>
 
-                <input
-                    type="text"
-                    placeholder="Título"
-                    className="form-cadastro_input" 
-                    onChange={this._handleMudancaTitulo.bind(this)} //bind() - associa o evento a instância que está sendo criada
-                    value={this.state.titulo}
-                />
+            <input
+                type="text"
+                placeholder="Título"
+                className="form-cadastro_input"
+                onChange={handleMudancaTitulo}
+                value={cadastro.titulo}
+            />
 
-                <textarea
-                    rows={15}
-                    placeholder="Escreva sua nota..."
-                    className="form-cadastro_input"
-                    onChange={this._handleMudancaTexto.bind(this)}
-                    value={this.state.texto}
-                />
+            <textarea
+                rows={15}
+                placeholder="Escreva sua nota..."
+                className="form-cadastro_input"
+                onChange={handleMudancaTexto}
+                value={cadastro.texto}
+            />
 
-                <button className="form-cadastro_input form-cadastro_submit">
-                    Criar Nota
-                </button>
-                
-            </form>
-        );
-    }
+            <button className="form-cadastro_input form-cadastro_submit">
+                Criar Nota
+            </button>
+
+        </form>
+    );
+
 }
 
 export default FormularioCadastro;
