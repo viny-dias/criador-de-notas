@@ -1,46 +1,40 @@
 import React from "react";
-import { useEffect } from "react";
 import { useState } from "react";
+import useCategorias from '../../hooks/useCategorias';
+import useNotas from '../../hooks/useNotas';
 import './estilo.css';
 
-function FormularioCadastro({ categorias, criarNota }) {
+
+function FormularioCadastro() {
 
     //Estado interno do componente
     const [cadastro, //recebe os dados 
         setCadastro] = useState({ categorias: [], titulo: '', texto: '', categoria: 'Sem categoria' }); //seta os dados
 
-    // useEffect -> roda após o componente ser montado
-    useEffect( () => {
-        categorias.inscrever(novasCategorias) //roda após o componente ser montado
-        return () => { categorias.desinscrever() } //roda quando o componente é desmontado da tela
-    }, [] //array de dependencia
-    );
+    const categorias = useCategorias( state => state.categorias );
 
-    function novasCategorias(categorias) {
-        setCadastro({ ...cadastro, categorias });
-    }
+    const criarNota = useNotas( state => state.increment );
 
     function handleMudancaCategoria(evento) {
-        evento.stopPropagation();
         setCadastro({ ...cadastro, categoria: evento.target.value });
     }
 
     function handleMudancaTitulo(evento) {
-        evento.stopPropagation();
         setCadastro({ ...cadastro, titulo: evento.target.value });
     }
 
     function handleMudancaTexto(evento) {
-        evento.stopPropagation();
         setCadastro({ ...cadastro, texto: evento.target.value });
     }
 
     function handleSubmit (evento) {
         evento.preventDefault(); //para não executar o comportamento padrão (tentar enviar o form)
-        evento.stopPropagation(); //evita a propagação do evento no DOM
-        criarNota(cadastro.titulo, cadastro.texto, cadastro.categoria); //chamando a propriedade "criarNota" da instância "FormularioCadastro"
-
-        setCadastro({ ...cadastro, titulo: '', texto: '', categoria: 'Sem Categoria' });
+        // evento.stopPropagation(); //evita a propagação do evento no DOM
+        
+        if(cadastro.titulo !== "" && cadastro.texto !== "") {
+            criarNota({titulo: cadastro.titulo, texto: cadastro.texto, categoria: cadastro.categoria}); //chamando a propriedade "criarNota" da instância "FormularioCadastro"
+            setCadastro({ ...cadastro, titulo: '', texto: '', categoria: 'Sem Categoria' });
+        }
     }
 
 
@@ -50,7 +44,7 @@ function FormularioCadastro({ categorias, criarNota }) {
             <select className="form-cadastro_input" onChange={handleMudancaCategoria} >
                 <option>Sem categoria</option>
 
-                {categorias.categorias.map((categoria, index) => {
+                {categorias.map((categoria, index) => {
                     return <option key={index}>{categoria}</option>
                 })}
             </select>

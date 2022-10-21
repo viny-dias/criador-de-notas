@@ -1,53 +1,42 @@
-import React, { Component } from 'react';
+import React from 'react';
+import useCategorias from '../../hooks/useCategorias';
 import "./estilo.css";
 
-class ListaDeCategorias extends Component {
+function ListaDeCategorias() {
 
-    constructor() {
-        super();
-        this.state = {categorias: []}
+    const categorias = useCategorias( state => state.categorias );
 
-        this._novasCategorias = this._novasCategorias.bind(this);
-    }
+    const adicionarCategoria = useCategorias( state => state.increment );
 
-    componentDidMount() {
-        this.props.categorias.inscrever(this._novasCategorias);
-    }
-
-    componentWillUnmount() {
-        this.props.categorias.desinscrever(this._novasCategorias);
-    }
-
-    _novasCategorias(categorias) {
-        this.setState({...this.state, categorias});
-    }
-
-    _handleEventoInput(e) {
-        if (e.key == "Enter") {
+    function handleEventoInput(e) {
+        if (e.key === "Enter") {
             let valorCategoria = e.target.value;
-            this.props.adicionarCategoria(valorCategoria);
+            
+            if(valorCategoria.trim() && !categorias.includes(valorCategoria)) {
+                adicionarCategoria(valorCategoria);
+                e.target.value = "";
+            }
         }
     }
 
-    render() {
-        return (
-            <section className="lista-categorias">
-                <ul className="lista-categorias_lista">
+    console.log(categorias);
+    return (
+        <section className="lista-categorias">
+            <ul className="lista-categorias_lista">
 
-                    {this.state.categorias.map((categoria, index) => {
-                        return <li key={index} className="lista-categorias_item">{categoria}</li>
-                    })}
+                {categorias.map((categoria, index) => {
+                    return <li key={index} className="lista-categorias_item">{categoria}</li>
+                })}
 
-                </ul>
+            </ul>
 
-                <input
-                    type="text"
-                    className="lista-categorias_input"
-                    placeholder='Adicionar categoria'
-                    onKeyUp={this._handleEventoInput.bind(this)} />
-            </section>
-        );
-    }
+            <input
+                type="text"
+                className="lista-categorias_input"
+                placeholder='Adicionar categoria'
+                onKeyUp={ handleEventoInput } />
+        </section>
+    );
 }
 
 export default ListaDeCategorias;
