@@ -1,25 +1,23 @@
 import React from 'react';
-import useCategorias from '../../hooks/useCategorias';
+import { useSelector, useDispatch } from 'react-redux';
 import "./estilo.css";
 
 function ListaDeCategorias() {
+    const dispatch = useDispatch();
 
-    const categorias = useCategorias( state => state.categorias );
-
-    const adicionarCategoria = useCategorias( state => state.increment );
+    const categorias  = useSelector(state => state.novaCategoria.categorias) 
 
     function handleEventoInput(e) {
         if (e.key === "Enter") {
             let valorCategoria = e.target.value;
             
             if(valorCategoria.trim() && !categorias.includes(valorCategoria)) {
-                adicionarCategoria(valorCategoria);
+                dispatch( { type: 'increment', value: valorCategoria } )
                 e.target.value = "";
             }
         }
     }
 
-    console.log(categorias);
     return (
         <section className="lista-categorias">
             <ul className="lista-categorias_lista">

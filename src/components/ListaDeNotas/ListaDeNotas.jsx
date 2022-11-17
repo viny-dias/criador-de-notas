@@ -1,13 +1,13 @@
 import React from "react";
 import CardNota from "../CardNota";
 import './estilo.css';
-import useNotas from '../../hooks/useNotas';
+import { useSelector, useDispatch } from 'react-redux';
 
 function ListaDeNotas() {
 
-    const notas = useNotas( state => state.notas );
+    const dispatch = useDispatch();
 
-    const apagarNota = useNotas( state => state.delete );
+    const notas = useSelector(state => state.novaNota.notas);
 
     return (
         <ul className="lista-notas">
@@ -17,7 +17,7 @@ function ListaDeNotas() {
 
                         <CardNota 
                             indice={index}
-                            apagarNota={apagarNota} 
+                            apagarNota={() => dispatch( {type:'deleteNota', value: nota} )} 
                             titulo={nota.titulo} 
                             texto={nota.texto} 
                             categoria={nota.categoria}
