@@ -2,12 +2,14 @@ import React from "react";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./estilo.css";
+import { notaActions } from "../../store/index";
+import { v4 as uuidv4 } from "uuid";
 
 function FormularioCadastro() {
   const dispatch = useDispatch();
 
   //Pegando o estado, categorias, do store
-  const categorias = useSelector((state) => state.novaCategoria.categorias);
+  const categorias = useSelector((state) => state.categoria.categorias);
 
   //Estado interno do componente
   const [
@@ -19,8 +21,6 @@ function FormularioCadastro() {
     texto: "",
     categoria: "Sem categoria",
   }); //seta os dados
-
-  // const criarNota = useNotas( state => state.increment );
 
   function handleMudancaCategoria(evento) {
     setCadastro({ ...cadastro, categoria: evento.target.value });
@@ -46,14 +46,7 @@ function FormularioCadastro() {
         categoria: "Sem Categoria",
       });
 
-      dispatch({
-        type: "incrementNota",
-        value: {
-          titulo: cadastro.titulo,
-          texto: cadastro.texto,
-          categoria: cadastro.categoria,
-        },
-      });
+      dispatch(notaActions.increment({ ...cadastro, id: uuidv4() }));
     }
   }
 
@@ -62,8 +55,8 @@ function FormularioCadastro() {
       <select className="form-cadastro_input" onChange={handleMudancaCategoria}>
         <option>Sem categoria</option>
 
-        {categorias.map((categoria, index) => {
-          return <option key={index}>{categoria}</option>;
+        {categorias.map((categoria) => {
+          return <option key={categoria.id}>{categoria.value}</option>;
         })}
       </select>
 
